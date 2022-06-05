@@ -1,0 +1,219 @@
+<html>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<head>
+    <title>Random String Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <script>
+
+        window.onload = function () {
+            const generated = JSON.parse(localStorage.getItem('generated')) || [];
+            showOnUi(generated);
+        };
+
+        const clearWarning = () => {
+
+            document.getElementById("noMore").innerText = "";
+
+        }
+
+        const generate = () => {
+            clearWarning();
+            const alpha = document.getElementById("alpha").checked;
+            const num = document.getElementById("num").checked;
+            let characters = "";
+            const length = document.getElementById("length").value;
+            if ((!alpha && !num) || isNaN(length) || length < 1) {
+                return;
+            }
+            if (alpha) {
+                characters = `${characters}abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ`;
+            }
+            if (num) {
+                characters = `${characters}1234567890`;
+            }
+            const generated = JSON.parse(localStorage.getItem('generated')) || [];
+            const prefix = document.getElementById("prefix").value;
+            const suffix = document.getElementById("suffix").value;
+            const charactersLength = characters.length;
+            let result = '';
+            for (let initial = 0; initial < length; initial++) {
+
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+
+            }
+            if (generated.includes(result)) {
+
+                try {
+
+                    generate();
+
+                } catch (error) {
+
+                    document.getElementById("noMore").innerText = "No more combinations"
+
+                }
+
+            } else {
+
+                generated.splice(0, 0, prefix + result + suffix);
+                localStorage.setItem('generated', JSON.stringify(generated))
+                showOnUi(generated);
+
+            }
+        }
+
+        const showOnUi = (generated) => {
+            let innerHTML = ''
+            for (const generatedO of generated) {
+
+                innerHTML = `${innerHTML}<div class='output_div'><span class="text_overflow">${generatedO}</span>
+                    <i style='font-size: 25px;cursor: pointer;' onclick='copy("${generatedO}");' class='fa-solid fa-copy'></i>
+                    </div>`;
+
+            }
+            document.getElementById("outputArea").innerHTML = innerHTML;
+        }
+
+        const copy = (text) => {
+            navigator.vibrate(20);
+            navigator.clipboard.writeText(text);
+        }
+
+        const clearStorage = () => {
+            localStorage.clear('generated');
+            document.getElementById("outputArea").innerHTML = '';
+        }
+
+    </script>
+
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .input_area,
+        .output_area {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .input_div,
+        .output_div {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1px 0px 5px 0px;
+            max-width: 444px;
+        }
+
+        .text_overflow {
+            max-width: 444px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        .btn {
+            box-sizing: border-box;
+            appearance: none;
+            background-color: transparent;
+            border: 2px solid dodgerBlue;
+            border-radius: 0.6em;
+            color: dodgerBlue;
+            cursor: pointer;
+            display: flex;
+            align-self: center;
+            font-size: 18px;
+            line-height: 1;
+            padding: 8px;
+            text-decoration: none;
+            justify-content: center;
+            text-transform: uppercase;
+            font-weight: 700;
+            width: 40%;
+        }
+
+        .btn:hover {
+            color: #fff;
+            outline: 0;
+        }
+
+        .btn-style {
+            transition: box-shadow 300ms ease-in-out, color 300ms ease-in-out;
+        }
+
+        .btn-style:hover {
+            box-shadow: 0 0 40px 40px dodgerBlue inset;
+        }
+
+        input {
+            border: 2px solid #aaa;
+            border-radius: 4px;
+            outline: none;
+            padding: 6px;
+            box-sizing: border-box;
+            transition: .3s;
+            width: 50%;
+            max-width: 220px;
+        }
+
+        input:focus {
+            border-color: dodgerBlue;
+            box-shadow: 0 0 8px 0 dodgerBlue;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div>
+
+        <div class="input_area">
+
+            <div class="input_div">
+                Prefix
+                <input type="text" id="prefix">
+            </div>
+            <div class="input_div">
+                Suffix
+                <input type="text" id="suffix">
+            </div>
+            <div class="input_div">
+                Characters length
+                <input type="number" min="1" oninput="clearWarning();" value="1" id="length">
+            </div>
+
+            <div class="input_div">
+                Include
+                <div style="display: flex;justify-content: space-between;">
+                    <div>
+                        <input type="checkbox" style="width: 20px" onchange="clearWarning();" checked=true id="num">
+                        <label for="alpha">Numbers</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" style="width: 20px" onchange="clearWarning();" id="alpha">
+                        <label for="alpha">Alphabets</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input_div" style="justify-content: space-between;margin: 5px 0px 15px 0px;">
+                <input type="button" class="btn btn-style" onclick="generate();" value="Generate">
+                <input type="button" class="btn btn-style" onclick="clearStorage();" value="Clear">
+            </div>
+        </div>
+
+        <div class="output_area" id="noMore">
+        </div>
+
+        <div class="output_area" id="outputArea">
+        </div>
+
+    </div>
+
+</body>
+
+</html>
