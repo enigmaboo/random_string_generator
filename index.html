@@ -43,7 +43,7 @@
                 result += characters.charAt(Math.floor(Math.random() * charactersLength));
 
             }
-            if (generated.includes(result)) {
+            if (generated.includes(prefix + result + suffix)) {
 
                 try {
 
